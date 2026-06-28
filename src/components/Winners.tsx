@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { api } from '../api/api';
 import { CarIcon } from './CarIcon';
+import type { RootState } from '../store';
 
 // Define explicit interfaces for the raw API responses
 interface Car {
@@ -29,8 +31,11 @@ export function Winners() {
   const [totalCount, setTotalCount] = useState(0);
   const [sortBy, setSortBy] = useState<'wins' | 'time'>('wins');
   const [order, setOrder] = useState<'asc' | 'desc'>('desc');
+  const currentView = useSelector((state: RootState) => state.garage.currentView);
 
   useEffect(() => {
+    if (currentView !== 'winners') return;
+
     let cancelled = false;
 
     (async () => {
@@ -66,7 +71,7 @@ export function Winners() {
     return () => {
       cancelled = true;
     };
-  }, [page, sortBy, order]);
+  }, [page, sortBy, order, currentView]);
 
   const toggleSort = (field: 'wins' | 'time') => {
     if (sortBy === field) {

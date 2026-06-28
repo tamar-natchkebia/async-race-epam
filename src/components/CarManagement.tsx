@@ -13,7 +13,6 @@ const MAX_CAR_NAME_LENGTH = 30;
 export function CarManagement({ onCarAction }: ManagementProps) {
   const dispatch = useDispatch();
   
-  // 1. Pull the race status from your Redux state to guard actions
   const selectedCarId = useSelector((state: RootState) => state.garage.selectedCarId);
   const raceStatus = useSelector((state: RootState) => state.garage.raceStatus); 
   const isRacing = raceStatus === 'racing';
@@ -42,7 +41,7 @@ export function CarManagement({ onCarAction }: ManagementProps) {
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Guard clause against mid-race actions
+    
     if (isRacing || !isValidCarName(createName)) return;
 
     await api.createCar({ name: createName.trim(), color: createColor });
@@ -52,7 +51,7 @@ export function CarManagement({ onCarAction }: ManagementProps) {
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Guard clause against mid-race actions
+
     if (isRacing || !selectedCarId || !isValidCarName(updateName)) return;
 
     await api.updateCar(selectedCarId, { name: updateName.trim(), color: updateColor });
@@ -62,20 +61,18 @@ export function CarManagement({ onCarAction }: ManagementProps) {
   };
 
   const generateHundredCars = async () => {
-    // Guard clause against mid-race actions
     if (isRacing) return;
 
     const brands = ['Tesla', 'Ford', 'BMW', 'Audi', 'Mercedes', 'Toyota', 'Honda', 'Porsche', 'Ferrari', 'Nissan'];
     const models = ['Model S', 'Mustang', 'M4', 'R8', 'AMG GT', 'Supra', 'Civic Type R', '911 Carrera', '488 Pista', 'GT-R'];
 
-    const promises = Array.from({ length: 100 }).map(() => {
+    for (let index = 0; index < 100; index += 1) {
       const randomName = `${brands[Math.floor(Math.random() * brands.length)]} ${models[Math.floor(Math.random() * models.length)]}`;
       const randomColor = `#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0')}`;
       const safeName = randomName.slice(0, MAX_CAR_NAME_LENGTH);
-      return api.createCar({ name: safeName, color: randomColor });
-    });
+      await api.createCar({ name: safeName, color: randomColor });
+    }
 
-    await Promise.all(promises);
     onCarAction();
   };
 

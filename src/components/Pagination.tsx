@@ -1,65 +1,83 @@
-import React from 'react';
+import type { CSSProperties } from 'react';
 
-interface PaginationProps {
-  currentPage: number;
+export interface PaginationProps {
+  page: number;
   totalCount: number;
-  limit: number;
-  onPageChange: (page: number) => void;
-  disabled?: boolean;
+  pageSize: number;
+  disabled: boolean;
+  onPrev: () => void;
+  onNext: () => void;
 }
 
-export function Pagination({ currentPage, totalCount, limit, onPageChange, disabled = false }: PaginationProps) {
-  const totalPages = Math.ceil(totalCount / limit) || 1;
+const CONTAINER_STYLE: CSSProperties = {
+  display: 'flex',
+  gap: '12px',
+  marginTop: '28px',
+  alignItems: 'center',
+  justifyContent: 'center',
+  background: '#1e293b',
+  padding: '12px',
+  borderRadius: '8px',
+  border: '1px solid #334155',
+};
+
+const LABEL_STYLE: CSSProperties = {
+  fontSize: '14px',
+  color: '#94a3b8',
+  fontWeight: 500,
+  minWidth: '100px',
+  textAlign: 'center',
+};
+
+function getPageButtonStyle(disabled: boolean): CSSProperties {
+  return {
+    padding: '8px 20px',
+    backgroundColor: disabled ? '#334155' : '#475569',
+    color: disabled ? '#64748b' : '#ffffff',
+    border: 'none',
+    borderRadius: '6px',
+    fontWeight: 600,
+    fontSize: '14px',
+    cursor: disabled ? 'not-allowed' : 'pointer',
+    transition: 'background-color 0.2s',
+  };
+}
+
+export function Pagination({
+  page,
+  totalCount,
+  pageSize,
+  disabled,
+  onPrev,
+  onNext,
+}: PaginationProps) {
+  const totalPages = Math.ceil(totalCount / pageSize) || 1;
+  const isPrevDisabled = page === 1 || disabled;
+  const isNextDisabled = page * pageSize >= totalCount || disabled;
 
   return (
-    <div style={paginationContainerStyle}>
+    <div style={CONTAINER_STYLE}>
       <button
-        onClick={() => onPageChange(Math.max(1, currentPage - 1))}
-        disabled={disabled || currentPage === 1}
-        style={{
-          ...navButtonStyle,
-          cursor: disabled || currentPage === 1 ? 'not-allowed' : 'pointer',
-          opacity: disabled || currentPage === 1 ? 0.5 : 1,
-        }}
+        type="button"
+        onClick={onPrev}
+        disabled={isPrevDisabled}
+        style={getPageButtonStyle(isPrevDisabled)}
       >
         ◀ Prev
       </button>
-      <span style={textStyle}>
-        Page {currentPage} of {totalPages}
+
+      <span style={LABEL_STYLE}>
+        Page <strong style={{ color: '#f1f5f9' }}>{page}</strong> of {totalPages}
       </span>
+
       <button
-        onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
-        disabled={disabled || currentPage >= totalPages}
-        style={{
-          ...navButtonStyle,
-          cursor: disabled || currentPage >= totalPages ? 'not-allowed' : 'pointer',
-          opacity: disabled || currentPage >= totalPages ? 0.5 : 1,
-        }}
+        type="button"
+        onClick={onNext}
+        disabled={isNextDisabled}
+        style={getPageButtonStyle(isNextDisabled)}
       >
         Next ▶
       </button>
     </div>
   );
 }
-
-const paginationContainerStyle: React.CSSProperties = {
-  display: 'flex',
-  alignItems: 'center',
-  gap: '15px',
-  marginTop: '20px',
-};
-
-const navButtonStyle: React.CSSProperties = {
-  padding: '8px 16px',
-  backgroundColor: '#333',
-  color: '#fff',
-  border: '1px solid #444',
-  borderRadius: '4px',
-  fontWeight: '500',
-};
-
-const textStyle: React.CSSProperties = {
-  fontSize: '16px',
-  fontWeight: '500',
-  color: '#ddd',
-};
