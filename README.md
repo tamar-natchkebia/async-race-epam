@@ -9,7 +9,7 @@ and Vite, following the Airbnb ESLint style guide.
 🔗 **Deployed app:** https://race-epam.netlify.app/
 🔗 **Repo:** https://github.com/tamar-natchkebia/async-race-epam
 
-## Score: 350 / 400
+## Score: 370 / 400
 
 ---
 
