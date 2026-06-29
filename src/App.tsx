@@ -60,10 +60,6 @@ export default function App() {
       </header>
 
       <main>
-        {/* CRITICAL FIX: Keep components mounted in the DOM tree. 
-          Using conditional display instead of conditional rendering ensures 
-          the Garage layout, racing animations, and ongoing state are preserved.
-        */}
         <div style={{ display: currentView === 'garage' ? 'block' : 'none' }}>
           <GarageView />
         </div>

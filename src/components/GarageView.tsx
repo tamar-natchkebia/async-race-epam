@@ -35,8 +35,6 @@ export function GarageView() {
   const [totalCount, setTotalCount] = useState(0);
   const [winnerBanner, setWinnerBanner] = useState<WinnerInfo | null>(null);
 
-  // Synchronous guard — avoids the race condition where multiple cars finishing
-  // in the same tick all read stale React state and all get declared winners.
   const winnerDeclaredRef = useRef(false);
   const fastestTimeRef = useRef<number>(Infinity);
   const raceResultsRef = useRef<Map<number, { name: string; time: number }>>(new Map());
@@ -85,15 +83,13 @@ export function GarageView() {
 
   const handleRaceFinish = useCallback(
     async (carName: string, time: number, carId: number) => {
-      // Store this car's result
+
       raceResultsRef.current.set(carId, { name: carName, time });
 
-      // Wait a bit to collect all results, then pick the actual fastest
       setTimeout(async () => {
         if (winnerDeclaredRef.current) return;
         winnerDeclaredRef.current = true;
 
-        // Find the car with the minimum time
         let fastestCar = { name: '', time: Infinity };
         let fastestCarId = -1;
 
@@ -112,7 +108,7 @@ export function GarageView() {
             console.error('Error tracking scoreboard:', err);
           }
         }
-      }, 100); // 100ms delay to collect all results
+      }, 100); 
     },
     [recordWinner],
   );

@@ -3,8 +3,6 @@ import { useSelector } from 'react-redux';
 import { api } from '../api/api';
 import { CarIcon } from './CarIcon';
 import type { RootState } from '../store';
-
-// Define explicit interfaces for the raw API responses
 interface Car {
   id: number;
   name: string;
@@ -47,12 +45,10 @@ export function Winners() {
 
         if (cancelled) return;
 
-        // Strongly type the map using the Car interface
         const carMap = new Map<number, Omit<Car, 'id'>>(
           carsRes.data.map((c: Car) => [c.id, { name: c.name, color: c.color }])
         );
 
-        // Strongly type the loop using the WinnerApiRecord interface
         const merged: WinnerRow[] = winnersRes.data.map((w: WinnerApiRecord) => ({
           id: w.id,
           wins: w.wins,
